@@ -1,15 +1,16 @@
 import random
 import getpass
 import csv
-
-
+import datetime
 choices = ['rock', 'paper', 'scissors']
 keep_playing = True
 player_count = 0
 player2_count = 0
 computer_count = 0
 h_or_c = ('h','c')
-scoreboard_dict = {'Player1 Score' : '0', 'Computer Score' : '0'}
+scoreboard_dict = {'player_1' : 0, 'Computer Score' : 0}
+games_dict = {'datetime' : None , 'player_1_move' :None , 'player_2_move' : None , 'winner': None}
+
 against_human_or_computer = input("Are you playing against human(h) or computer(c)? ").lower().strip()
 while against_human_or_computer not in h_or_c:
     print("please enter 'h' or 'c'")
@@ -23,7 +24,7 @@ while keep_playing:
 
     while human_choice not in choices:
         human_choice = getpass.getpass('Invalid choice player1. Please choose again.\n Choose between rock, paper or scissors \n').lower()
-
+    games_dict['player_1_move']=human_choice
     win_conditions = [
         ('rock', 'scissors'),
         ('scissors', 'paper'),
@@ -35,9 +36,9 @@ while keep_playing:
         computer_choice = choices[computer_choice_index]
 
         if (human_choice, computer_choice) in win_conditions:
-            winner = 'Player'
+            winner = 'player_1'
             player_count += 1
-            scoreboard_dict['Player1 Score'] = player_count
+            scoreboard_dict['player_1'] = player_count
         elif (computer_choice, human_choice) in win_conditions:
             winner = "Computer"
             computer_count += 1
@@ -56,19 +57,20 @@ while keep_playing:
             print(key,value)
 
     elif against_human_or_computer == 'h':
-        if 'Player2 Score' not in scoreboard_dict.keys():
-            scoreboard_dict.update({'Player2 Score': '0'})
+        if 'player_2' not in scoreboard_dict.keys():
+            scoreboard_dict.update({'player_2': 0})
         player2_choice = getpass.getpass('Choose your weapon player2...\n').lower()
+        games_dict['player_2_move'] = player2_choice
         while player2_choice not in choices:
             player2_choice = getpass.getpass('Invalid choice player2. Please choose again.\n Choose between rock, paper or scissors\n').lower()
         if (human_choice, player2_choice) in win_conditions:
-            winner = 'Player1'
+            winner = 'player_1'
             player_count += 1
-            scoreboard_dict['Player1 Score'] = player_count
+            scoreboard_dict['player_1'] = player_count
         elif (player2_choice, human_choice) in win_conditions:
-            winner = "Player2"
+            winner = "player_2"
             player2_count += 1
-            scoreboard_dict['Player2 Score'] = player2_count
+            scoreboard_dict['player_2'] = player2_count
 
         else:
             winner = None
@@ -88,12 +90,23 @@ while keep_playing:
 
 
     continue_key = input('Type "q" to quit, type anything else to continue\n\n').lower()
+
     if continue_key == 'q':
+        games_dict['datetime'] = datetime.datetime.now()
+        if player_count>player2_count:
+            games_dict['winner'] = 'player_1'
+        elif player_count<player2_count:
+            games_dict['winner'] = 'player_2'
+        else:
+            games_dict['winner'] = 'Its a tie'
         print('Thank you for playing :)')
         keep_playing = False
-
+        for key, value in games_dict.items():
+            print(key,value)
+    with open('games.csv', 'w') as f:
+        for key in games_dict.keys():
+            f.write("%s,%s\n" % (key, games_dict[key]))
     with open('scores.csv', 'w') as f:
         for key in scoreboard_dict.keys():
             f.write("%s,%s\n" % (key, scoreboard_dict[key]))
-
 
