@@ -2,6 +2,7 @@ import random
 import getpass
 import csv
 import datetime
+import sys 
 choices = ['rock', 'paper', 'scissors']
 keep_playing = True
 player_count = 0
@@ -98,7 +99,7 @@ while keep_playing:
         elif player_count<player2_count:
             games_dict['winner'] = 'player_2'
         else:
-            games_dict['winner'] = 'Its a tie'
+            games_dict['winner'] = 'No winner'
         print('Thank you for playing :)')
         keep_playing = False
         for key, value in games_dict.items():
